@@ -1,12 +1,12 @@
 ---
 layout: page
 title: "About"
-description: "你是我的梦想"
+description: 
 header-img: "img/about-bg.jpg"
-multilingual: true
+multilingual: false
 ---
 
-{% include multilingual-sel.html %}
+<!-- 采用双语时取消该行代码注释，并补全花括号(直接注释没用，没时间探究原因)% include multilingual-sel.html %} --> 
 
 <!-- Chinese Version -->
 <div class="zh post-container">
@@ -14,12 +14,13 @@ multilingual: true
     {{ about_zh | markdownify }}
 </div>
 
-<!-- English Version -->
+<!-- 
+English Version 采用双语时取消下方代码注释
 <div class="en post-container">
     {% capture about_en %}{% include about/en.md %}{% endcapture %}
     {{ about_en | markdownify }}
 </div>
-
+-->
 
 {% if site.disqus_username %}
 <!-- disqus 评论框 start -->
