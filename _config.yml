@@ -3,7 +3,7 @@ title: My Blog
 SEOTitle: My Blog
 header-img: img/home-bg.jpg
 email: zlinbh@qq.com
-description: "逃离围城：一个后知后觉，在生活中沉浮的普通人。"
+description: "逃离围城"
 keyword: "博客，个人网站，互联网，产品，数据分析"
 
 # Publish posts or collection documents with a future date.
@@ -70,7 +70,10 @@ ga_domain:
 
 # Sidebar settings
 sidebar: true                      # whether or not using Sidebar.
-sidebar-about-description: "Hi."
+sidebar-about-description: "林桢晋<br><br>
+香港科技大学 2020- 硕士在读<br>华中科技大学 2014-18 本科<br><br>
+熟练掌握Mysql, Excel, Axure工具<br><br>
+\"热切冀寻产品/数据分析实习\""
 sidebar-avatar: /img/my_avatar.jpg     # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
