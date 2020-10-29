@@ -66,7 +66,7 @@ mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
 
    各品类商品单次购买量频率分布情况如下表：
 
-   
+   <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_5.jpg" alt="alt" style="zoom:67%;" /> 
 
    可知对于任意品类商品，其单次商品购买量在0~10件之间的订单数均占了总订单数的95%以上。因此可认为这部分基数最大的买家为普通个人用户，其登记的信息(婴儿年龄、性别)在用户维度分析中具有参考性。
 
@@ -90,7 +90,7 @@ mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
 
 经上述处理后共获得899条有效信息，部分数据如下图所示：
 
-<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt" style="zoom: 67%;" /> 
+​	<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt" style="zoom: 67%;" />		 
 
 ## 数据分析及可视化
 
