@@ -20,11 +20,19 @@ tags:
 
 数据包括记录用户交易信息的mum_baby_trade表以及记录用户(婴儿)信息的mum_baby表，部分数据如下图所示：
 
-![alt](http://qiwjidhsu.hn-bkt.clouddn.com/1024_1.jpg)
+|  user_id  | auction_id  |  cat_id  | cat1     | property            | buy_mount | day      |
+| :-------: | ----------- | :------: | -------- | ------------------- | --------- | -------- |
+| 786295544 | 41098319944 | 50014866 | 50022520 | 21458:86755362      | 2         | 20140919 |
+| 532110457 | 17916191097 | 50011993 | 28       | 21458:11399317      | 1         | 20131011 |
+| 249013725 | 21896936223 | 50012461 | 50014815 | 21458:30992;1628665 | 1         | 20131011 |
 
 mum_baby_trade表 (cat1: 商品一级分类id, cat_id: 商品二级分类id, day：购买日期)
 
-<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_2.jpg" alt="alt"  />
+| user_id | birthday | gender |
+| :-----: | :------: | :----: |
+|  2757   | 20130311 |   1    |
+| 415971  | 20121111 |   0    |
+| 1372572 | 20120130 |   1    |
 
 mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
@@ -46,9 +54,11 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 2. 隐藏不需要的auction_id、cat_id及property列。
 
-3. 重命名列名，对应关系如下:
+3. 重命名列名，对应关系如下：
 
-   <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_4.jpg" alt="alt" style="zoom:50%;" />
+   | user_id |      cat1      | buy_mount |   day    | birthday | gender |
+   | :-----: | :------------: | :-------: | :------: | :------: | :----: |
+   | 用户id  | 商品一级分类id | 购买数量  | 购买日期 | 出生日期 |  性别  |
 
 4. 删除步骤 3 中所需字段缺失的行。
 
@@ -70,8 +80,6 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 7. 增加“购买时年龄段”列，根据生理特点进一步将儿童年龄划分为4个年龄段：预产期(-2~0岁)、婴儿期(0~1岁)、幼儿期(1~3岁)、学前期(3~7岁)，以供后续分析作图使用。
 
-   
-
    经上述处理后共获得899条有效信息，部分数据如下图所示：
 
    <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt" style="zoom: 80%;" />
@@ -82,9 +90,19 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 ![alt](http://qiwjidhsu.hn-bkt.clouddn.com/1024_7.jpg)
 
-计算不同商品品类，不同性别平均单次购买量并作图：
+计算不同商品品类，不同性别平均单次购买量：
 
-<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_8.jpg" alt="alt" style="zoom:50%;" />
+|              |       男       |        |       女       |        |
+| :----------: | :------------: | :----: | :------------: | :----: |
+| **商品分类** | 平均单次购买量 | 标准差 | 平均单次购买量 | 标准差 |
+|      28      |      1.3       |  1.1   |      1.2       |  1.0   |
+|      38      |      2.7       |  2.4   |      2.1       |  1.7   |
+|   50008168   |      1.1       |  0.6   |      1.2       |  0.8   |
+|   50014815   |      1.6       |  1.6   |      1.3       |  1.0   |
+|   50022520   |      1.0       |  0.2   |      1.4       |  1.5   |
+|  122650008   |      1.1       |  0.3   |      1.0       |  0.0   |
+
+对应柱状图如下：
 
 <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_9.jpg" alt="alt" style="zoom:80%;" />
 
