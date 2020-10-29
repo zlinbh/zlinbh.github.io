@@ -28,7 +28,7 @@ tags:
 
 mum_baby_trade表 (cat1: 商品一级分类id, cat_id: 商品二级分类id, day：购买日期)
 
-![alt](http://qiwjidhsu.hn-bkt.clouddn.com/1024_2.jpg)
+<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_2.jpg" alt="alt"  />
 
 mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
 
@@ -52,9 +52,9 @@ mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
 
 2. 隐藏不需要的auction_id、cat_id及property列。
 
-3. 重命名列名，对应关系如下：
+3. 重命名列名，对应关系如下:
 
-<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_4.jpg" alt="alt" style="zoom:50%;" />
+   <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_4.jpg" alt="alt" style="zoom:50%;" />
 
 4. 删除步骤 3 中所需字段缺失的行。
 
@@ -65,21 +65,21 @@ mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
    ① 删去购买数量在(0，10]范围外的行，依据如下：
 
    各品类商品单次购买量频率分布情况如下表：
+
    
-   <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_5.jpg" alt="alt" style="zoom: 67%;" />
-   
+
    可知对于任意品类商品，其单次商品购买量在0~10件之间的订单数均占了总订单数的95%以上。因此可认为这部分基数最大的买家为普通个人用户，其登记的信息(婴儿年龄、性别)在用户维度分析中具有参考性。
+
    
-   
-   
+
    超出该区间，单次购买量较大的或为批发商或团购购入，其用户信息不应记入本次分析数据中。
+
    
-   
-   
+
    ② 增加“购买时年龄”(购买日期-出生日期)列，删除购买时年龄超出[-2，7]的行。(考虑母婴商品使用年龄段约为0~7岁及产前提前购买的情况，超出范围的异常值或为信息填写错误导致)
+
    
-   
-   
+
    ③ 删除性别为unknown的行。
 
  
@@ -90,7 +90,7 @@ mum_baby表(其中gender字段: 0-male, 1-female, 2-unknown)
 
 经上述处理后共获得899条有效信息，部分数据如下图所示：
 
-<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt" style="zoom: 67%;" />
+<img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt" style="zoom: 67%;" /> 
 
 ## 数据分析及可视化
 
