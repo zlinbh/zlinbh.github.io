@@ -9,6 +9,7 @@ header-img:
 tags:
     - 数据分析
     - Excel
+    - Mysql
 ---
 
 ## 数据介绍
@@ -47,7 +48,7 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 ## 数据清理
 
-由前述确定的分析目标，对数据进行如下处理：
+由前述确定的分析目标，使用**Excel**对数据进行如下处理：
 
 1) 根据user_id的对应关系，合并两表数据。
 
@@ -80,6 +81,30 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 经上述处理后共获得899条有效信息，部分数据如下图所示：
 
 <img src="http://qiwjidhsu.hn-bkt.clouddn.com/1024_6.jpg" alt="alt"  />
+
+若使用**Mysql**进行数据处理，则实现代码如下：
+
+```sql
+SELECT 
+t1.user_id AS '用户id',
+t1.cat1 AS '商品一级分类id',
+t1.buy_mount AS '购买数量',
+t2.gender AS '性别',
+str_to_date(t1.day, '%Y%m%d') AS '购买日期',
+str_to_date(t2.birthday, '%Y%m%d') AS '出生日期',
+-- 日期格式一致化处理
+datediff(str_to_date(t1.day, '%Y%m%d'), str_to_date(t2.birthday, '%Y%m%d'))/365 AS '购买时年龄'
+FROM 
+mum_baby_trade AS t1 INNER JOIN mum_baby AS t2
+ON t1.user_id = t2.user_id
+WHERE t1.buy_mount BETWEEN 0 AND 10
+-- 选取购买量在(0,10]的行
+AND datediff(str_to_date(t1.day, '%Y%m%d'), str_to_date(t2.birthday, '%Y%m%d'))/365 BETWEEN -2 AND 7
+-- 删除购买时年龄超出[-2，7]的行 
+AND t1.gender IN (0, 1)
+-- 删除性别为unknow的行
+ORDER BY t1.user_id;
+```
 
 ## 数据分析及可视化
 
