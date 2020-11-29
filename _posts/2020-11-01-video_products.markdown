@@ -38,7 +38,7 @@ tags:
 
 完成后与实际产品的登陆注册流程进行对比，再次完善任务流程图。
 
-<<img src="https://i.loli.net/2020/11/29/jGsJbtIPWFBLETl.jpg" alt="1102_2.jpg" style="zoom: 80%;" />
+<img src="https://i.loli.net/2020/11/29/jGsJbtIPWFBLETl.jpg" alt="1102_2.jpg" style="zoom: 80%;" />
 
 ## 低保真原型图绘制
 
