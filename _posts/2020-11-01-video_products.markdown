@@ -24,13 +24,13 @@ tags:
 
 以抖音的注册登录界面为例，对其功能进行分析：
 
-<img src="https://i.loli.net/2020/11/29/O3DPQANR5HFztuf.jpg" alt="1102_1.jpg" style="zoom: 50%;" />
+![img](https://img.imgdb.cn/item/6003d20b3ffa7d37b36873b3.jpg)
 
 登录注册界面中体现的主要功能可以分为：手机号快速登录、手机号常规登录、其他方式登录、帮助以及功能切换选项。
 
 从上述结构中进一步展开，明确每一部分功能包含了哪些具体任务，制作产品功能需求列表：
 
-<img src="https://i.loli.net/2020/11/29/kWJCprUxFiMDdsY.jpg" alt="1102_3.jpg" style="zoom:67%;" />
+![img](https://img.imgdb.cn/item/6003d20b3ffa7d37b36873b9.jpg)
 
 ## 任务流程图绘制
 
@@ -38,13 +38,13 @@ tags:
 
 完成后与实际产品的登陆注册流程进行对比，再次完善任务流程图。
 
-<img src="https://i.loli.net/2020/11/29/jGsJbtIPWFBLETl.jpg" alt="1102_2.jpg" style="zoom: 80%;" />
+![img](https://img.imgdb.cn/item/6003d20b3ffa7d37b36873b6.jpg)
 
 ## 低保真原型图绘制
 
 以任务流程图为框架，使用Axure绘制低保真原型图，并添加简单的交互动作。布局参照抖音的注册界面，最终产出效果如下：
 
-<img src="https://i.loli.net/2020/11/29/GcVhm3QyrAF5HvO.jpg" alt="1102_4.jpg" style="zoom: 67%;" />
+![img](https://img.imgdb.cn/item/6003d20b3ffa7d37b36873bd.jpg)
 
 ## 思考总结
 
