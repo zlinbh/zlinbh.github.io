@@ -42,7 +42,7 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 为了找到提高销售量的关键，这里采用多维分解的方式，将数据表的列划分为以下三个维度：
 
-<img src="https://i.loli.net/2020/11/29/6DVFRyxZfaHW9c4.jpg" alt="1024_1.jpg" style="zoom:80%;" />
+![img](https://img.imgdb.cn/item/6003d0f43ffa7d37b367e644.jpg)
 
 考虑到个人能力及业务知识的限制，故确定本次分析仅从用户维度出发，分析年龄、性别与商品销量之间的潜在关系。
 
@@ -70,7 +70,7 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 对商品单次购买量分段进行频数分布统计，可知：对于任意品类商品，其单次商品购买量在0~10件之间的订单数均占了总订单数的95%以上。因此可认为这部分基数最大的买家为普通个人用户，其登记的信息(婴儿年龄、性别)在用户维度分析中具有参考性。超出该区间，单次购买量较大的数据或为批发商或团购购入，其用户信息不应记入本次分析数据中。
 
-<img src="https://i.loli.net/2020/11/29/7MzqsjB4Hu3NXr8.jpg" alt="1024_2.jpg" style="zoom: 50%;" />
+![img](https://img.imgdb.cn/item/6003d0f63ffa7d37b367e730.jpg)
 
 ② 增加“购买时年龄”(购买日期-出生日期)列，删除购买时年龄超出[-2，7]的行。(考虑母婴商品使用年龄段约为0~7岁及产前提前购买的情况，超出范围的异常值或为信息填写错误导致)
 
@@ -80,7 +80,7 @@ mum_baby表 (其中gender字段: 0-male, 1-female, 2-unknown)
 
 经上述处理后共获得899条有效信息，部分数据如下图所示：
 
-<img src="https://i.loli.net/2020/11/29/izt19S5pxwNGlKC.jpg" alt="1024_3.jpg" style="zoom:80%;" />
+![img](https://img.imgdb.cn/item/6003d0fb3ffa7d37b367e8a7.jpg)
 
 若使用**Mysql**进行数据处理，则实现代码如下：
 
@@ -110,7 +110,7 @@ ORDER BY t1.user_id;
 
 对不同商品品类，以年龄区间-订单数为轴，性别为分项，做柱状堆积图如下：
 
-<img src="https://i.loli.net/2020/11/29/wpnX6LBQi92rz7T.jpg" alt="1024_4.jpg" style="zoom: 80%;" />
+![img](https://img.imgdb.cn/item/6003d0fd3ffa7d37b367e987.jpg)
 
 计算不同商品品类，不同性别平均单次购买量：
 
@@ -126,7 +126,7 @@ ORDER BY t1.user_id;
 
 对应柱状图如下：
 
-<img src="https://i.loli.net/2020/11/29/DEkgd8IyCBMh7US.jpg" alt="1024_5.jpg" style="zoom: 80%;" />
+![img](https://img.imgdb.cn/item/6003d0ff3ffa7d37b367ea49.jpg)
 
 **可以得到如下结论：**
 
