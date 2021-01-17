@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "读书笔记：增长黑客"
+title:      "读书笔记: 增长黑客"
 subtitle:   "数据驱动产品改进"
 date:       2020-12-28
 author:     "zlinbh"
