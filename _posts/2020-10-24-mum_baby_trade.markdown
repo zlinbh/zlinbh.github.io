@@ -1,13 +1,12 @@
 ---
 layout:     post
-title:      "某电商商品交易数据简易分析"
-subtitle:   "把握用户信息与商品间的相关性"
+title:      "电商商品交易数据的简易分析"
+subtitle:   "Excel/Mysql数据处理入门练习"
 date:       2020-10-24
 author:     "zlinbh"
 hidden:		false
 header-img: 
 tags:
-    - 数据分析
     - Excel
     - Mysql
 ---
