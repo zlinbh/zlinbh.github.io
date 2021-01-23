@@ -7,7 +7,7 @@ author:     "zlinbh"
 hidden:		false
 header-img: 
 tags:
-    - 产品需求文档
+    - 产品实践
 ---
 
 ## 实践方法
