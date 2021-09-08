@@ -7,7 +7,7 @@ author:     "zlinbh"
 hidden:		false
 header-img: 
 tags:
-    - 产品实践
+    - 功能分析
 ---
 
 ## 实践方法
