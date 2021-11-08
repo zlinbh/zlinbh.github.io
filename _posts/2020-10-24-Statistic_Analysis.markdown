@@ -7,7 +7,9 @@ author:     "zlinbh"
 hidden:		false
 header-img: 
 tags:
-    - 数据分析
+    - 数据清洗
+    - MySQL
+    - Excel
 ---
 
 ## 数据介绍
