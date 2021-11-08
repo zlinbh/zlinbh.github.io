@@ -16,6 +16,8 @@ tags:
 
 施工中…
 
+
+
 # Read Me
 
 产品学习知识库内包含本人阅读过的产品相关书籍索引，以及基于个人理解绘制的内容结构脑图。
@@ -54,6 +56,58 @@ tags:
 > - 一、二级目录根据拼音A-Z的顺序进行排列，二级目录下的书籍根据其关键词评分进行降序排列。
 > - 关键词评分相同时，根据书名A-Z的顺序排列。
 > - 存在关键词评分 = Null的书籍，除参与常规匹配外，也将收录在“待回顾书目”条目下，根据书名A-Z的顺序排列。
+
+
+
+# MySQL源码
+
+**根据定义，对应数据字段名及分表情况见下例**：
+
+Table: Book（Book表：记录书名、作者、出版时间等书籍基本信息）
+
+| Book_id | Title | Author | PublicDate |
+| ------- | ----- | ------ | ---------- |
+| 1       |       |        |            |
+| 2       |       |        |            |
+
+Table: Score（Score表：记录应用场景、关键词、关键词评分等用于目录排序的信息）
+
+| Score_id | Book_id | Purpose | Keyword | Score | CaseIncluded |
+| -------- | ------- | ------- | ------- | ----- | ------------ |
+| 1        | 1       |         |         |       |              |
+| 2        | 1       |         |         |       |              |
+
+
+
+**MySQL源码如下：**
+
+```sql
+/*创建Book表*/
+CREATE TABLE Book
+(
+	Book_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Title CHAR(30) NOT NULL,
+	Author CHAR(30) NOT NULL,
+    PublicDate YEAR NOT NULL
+);
+/*录入书籍基本信息*/
+INSERT INTO Book(Title, Author, PublicDate) VALUES('结构思考力', '李忠秋', '2015')
+
+/*创建评分表*/
+CREATE TABLE Score
+(
+	Score_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Book_id MEDIUMINT NOT NULL REFERENCES Book(Book_id)
+    Purpose CHAR(20) NOT NULL,
+    Keyword CHAR(20) NOT NULL,
+    CaseIncluded BOOL NOT NULL,
+    Score MEDIUMINT
+);
+/*录入书籍排序信息*/
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(1, '协调沟通', '结构化表达'，True, 5)
+
+
+```
 
 
 
@@ -258,60 +312,3 @@ tags:
 
 
 # 待回顾书目
-
-
-
-
-
-# MySQL源码
-
-**根据定义，对应数据字段名及分表情况见下例**：
-
-Table: Book（Book表：记录书名、作者、出版时间等书籍基本信息）
-
-| Book_id | Title | Author | PublicDate |
-| ------- | ----- | ------ | ---------- |
-| 1       |       |        |            |
-| 2       |       |        |            |
-
-Table: Score（Score表：记录应用场景、关键词、关键词评分等用于目录排序的信息）
-
-| Score_id | Book_id | Purpose | Keyword | Score | CaseIncluded |
-| -------- | ------- | ------- | ------- | ----- | ------------ |
-| 1        | 1       |         |         |       |              |
-| 2        | 1       |         |         |       |              |
-
-
-
-**MySQL源码如下：**
-
-```mysql
-/*创建Book表*/
-CREATE TABLE Book
-(
-	Book_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	Title CHAR(30) NOT NULL,
-	Author CHAR(30) NOT NULL,
-    PublicDate YEAR NOT NULL
-);
-/*录入书籍基本信息*/
-INSERT INTO Book(Title, Author, PublicDate) VALUES('结构思考力', '李忠秋', '2015')
-
-/*创建评分表*/
-CREATE TABLE Score
-(
-	Score_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    Book_id MEDIUMINT NOT NULL REFERENCES Book(Book_id)
-    Purpose CHAR(20) NOT NULL,
-    Keyword CHAR(20) NOT NULL,
-    CaseIncluded BOOL NOT NULL,
-    Score MEDIUMINT
-);
-/*录入书籍排序信息*/
-INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(1, '协调沟通', '结构化表达'，True, 5)
-
-
-```
-
-
-
