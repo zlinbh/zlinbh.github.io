@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "抖音APP注册模块的PRD文档逆向倒推"
-subtitle:   "基于实例的产品实践"
+subtitle:   "基于实例的PRD文档产出实践"
 date:       2020-11-01
 author:     "zlinbh"
 hidden:		false
