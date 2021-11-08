@@ -7,7 +7,8 @@ author:     "zlinbh"
 hidden:		false
 header-img: 
 tags:
-    - 功能分析
+    - 文档撰写
+    - 原型绘制
 ---
 
 ## 实践方法
