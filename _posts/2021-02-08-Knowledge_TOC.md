@@ -1,0 +1,517 @@
+---
+layout:     post
+title:      "基于实际场景：我的个人产品知识库搭建"
+subtitle:   "基本逻辑架构能力及业余产品学习经历展示"
+date:       2021-11-08
+author:     "zlinbh"
+hidden:		false
+header-img: 
+tags:
+    - 读书笔记
+    - MySQL
+    - 文档撰写
+---
+
+# Read Me
+
+产品学习知识库内包含本人阅读过的产品相关书籍索引，以及基于个人理解绘制的思维导图。
+
+为了满足求职及实习过程中，带有目的性的知识回顾需求，故尝试通过构建简单的评价及分类排序规则，以提高信息检索效率。
+
+所有阅读过的书籍信息均存放于数据表中。基于给定规则，实现分表录入、排序的MySQL语句代码附在后文。
+
+** 最近更新时间：2021/11/8
+
+***
+
+
+
+每本书应包含如下属性：**应用场景**、**关键词**、**关键词评分**、**案例结合**、**作者**、**出版年份**。
+
+> **应用场景：**作为检索时的一级目录。以应用场景作为搜索锚点，能够提高在具体需求场景下的检索效率。
+>
+> **关键词：**作为检索时的二级目录。一本书允许包含多个关键词，覆盖多种应用场景，因此可能会在不同的条目下多次出现。
+>
+> **关键词评分：**对书籍的每一条关键词，综合说服力和可用性两方面进行主观评分。评分取[1,5] or Null，在对应关键词后以括号内数字形式展示。
+>
+> - 说服力：观点论证是否具备明确的逻辑关系，论据是否客观充分。
+>- 可用性：相关知识的普适程度如何，能否快速迁移应用于当前实践。
+> - 有用性评分 = Null：表明该关键词涉及内容难度较大，超出当前认知范畴，暂无法评分。
+>
+>**案例结合**：关键词内容中涉及具体落地方案或真实案例时，该列属性设为True。带有案例的关键词以添加下划线形式展示，以协助判断内容价值。
+> 
+>**出版年份：**从时效性角度协助判断内容价值。
+
+
+
+**排序规则：**
+
+> - 一、二级目录根据拼音A-Z的顺序进行排列，二级目录下的书籍根据其关键词评分进行降序排列。
+> - 同一关键词下书籍数量 ≥ 3本时，仅展示关键词评分>同类平均分的书籍；书籍数量 < 3本时，相关书籍均参与展示。
+> - 关键词评分相同时，根据书名A-Z的顺序排列。
+> - 存在关键词评分 = Null的书籍，收录在“待回顾书目”条目下，根据书名A-Z的顺序排列，不参与常规匹配。
+
+
+
+
+
+# MySQL源码
+
+**根据定义，对应数据字段名及分表情况见下例**：
+
+Table: Book（Book表：记录书名、作者、出版时间等书籍基本信息）
+
+| Book_id | Title                                | Author      | PublicDate |
+| ------- | ------------------------------------ | ----------- | ---------- |
+| 1       | 启示录：打造用户喜爱的产品           | Marty Cagan | 2011       |
+| 2       | 计算广告：互联网商业变现的市场与技术 | 刘鹏        | 2015       |
+
+Table: Score（Score表：记录应用场景、关键词、关键词评分等用于目录排序的信息）
+
+| Score_id | Book_id | Purpose  | Keyword    | Score | CaseIncluded |
+| -------- | ------- | -------- | ---------- | ----- | ------------ |
+| 1        | 1       | 基础认知 | 职责和素质 | 4     | false        |
+| 2        | 1       | 基础认知 | 生产流程   | 2     | false        |
+
+**MySQL源码如下：**
+
+```sql
+/*创建Book表*/
+CREATE TABLE Book
+(
+	Book_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Title CHAR(30) NOT NULL,
+	Author CHAR(30) NOT NULL,
+    PublicDate YEAR NOT NULL
+);
+
+/*录入书籍基本信息*/
+INSERT INTO Book(Title, Author, PublicDate) VALUES('启示录：打造用户喜爱的产品', 'Marty Cagan', '2011')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('幕后产品：打造突破式产品思维', '王诗沐', '2019')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('增长黑客', 'Sean Ellis', '2015')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('结构思考力', '李忠秋', '2015')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('如何用数据解决实际问题', '柏木吉基', '2018')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('SQL必知必会', 'Ben Forta', '2013')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('简明Python教程', 'Swaroop C H', '2013')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('利用Python进行数据分析', 'Wes McKinney', '2017')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('结网', '王坚', '2010')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('人人都是产品经理：写给产品新人', '苏杰', '2017')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('结构思考力', '李忠秋', '2015')
+INSERT INTO Book(Title, Author, PublicDate) VALUES('用户体验要素：以用户为中心的产品设计', 'Jesse James Garrett', '2010')
+-- 后略
+
+/*创建Score表*/
+CREATE TABLE Score
+(
+	Score_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Book_id MEDIUMINT NOT NULL REFERENCES Book(Book_id),
+    Purpose CHAR(20) NOT NULL,
+    Keyword CHAR(20) NOT NULL,
+    CaseIncluded BOOL NOT NULL,
+    Score MEDIUMINT
+);
+
+/*录入书籍排序信息*/
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(1, '基础认知', '职责和素质'，False, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(1, '基础认知', '职场处事'，False, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(1, '基础认知', '生产流程'，False, 2)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(2, '基础认知', '职责和素质'，True, 2)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(2, '设计指南', '用户心理'，True, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(2, '设计指南', '问卷设计'，True, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(2, '设计指南', '增长策略'，True, 3)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(2, '设计指南', '需求分析'，True, 3)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(3, '基础认知', '生产流程'，True, 3)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(3, '设计指南', '增长策略'，True, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(3, '数据分析', '分析模型'，True, 4)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(4, '协调沟通', '结构化表达'，True, 5)
+INSERT INTO Score(Book_id, Purpose, Keyword, CaseIncluded, Score) VALUES(5, '数据分析', '分析模型'，True, 4)
+-- 后略
+
+/*根据规则设置进行筛选和排序*/
+SELECT b.Title, s.Purpose, s.Keyword, AVG(s.Score)
+FROM Book AS b 
+INNER JOIN Score AS s
+ON b.Book_id = s.Book_id
+WHERE s.Score IS NOT NULL
+AND s.Score >= AVG(s.Score)
+GROUP BY b.Title, s.Purpose, s.Keyword
+ORDER BY s.Purpose, s.Keyword, DESC s.Score, b.Title
+```
+
+
+
+# 检索目录
+
+## 基础认知
+
+### 职责和素质
+
+***《启示录：打造用户喜爱的产品》***
+
+关键词：**职责和素质(4)**，职场处事(4)，生产流程(2)
+
+作者：Marty Cagan
+
+出版年份：2011
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/6183558e2ab3f51d917bcc69.jpg) | <img src="https://img.imgdb.cn/item/600bc6a63ffa7d37b3a13186.png" alt="img" style="zoom: 33%;" /> |
+
+***《幕后产品：打造突破式产品思维》***
+
+关键词：**职责和素质(2)**，<u>用户心理(4)</u>，问卷设计(4)，<u>增长策略(3)</u>，需求分析(3)
+
+作者：王诗沐
+
+出版年份：2019
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618366552ab3f51d918d4e1f.jpg) | <img src="https://pic.imgdb.cn/item/618a26b32ab3f51d914d54e7.png" alt="alt" style="zoom: 33%;" /> |
+
+***《人人都是产品经理：写给产品新人》***
+
+关键词： **职责和素质(2)**，问卷设计(4)，<u>文档撰写(3)</u>，生产流程(3)，需求分析(2)
+
+作者：苏杰
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618629122ab3f51d91b95449.jpg" alt="alt" style="zoom: 67%;" /> | <img src="https://pic.imgdb.cn/item/618f17292ab3f51d912ed617.png" alt="alt" style="zoom: 33%;" /> |
+
+### 生产流程
+
+***《人人都是产品经理：写给产品新人》***
+
+关键词：**生产流程(3)**，问卷设计(4)，<u>文档撰写(3)</u>，职责和素质(2)，需求分析(2)
+
+作者：苏杰
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618629122ab3f51d91b95449.jpg" alt="alt" style="zoom: 67%;" /> | <img src="https://pic.imgdb.cn/item/618f17292ab3f51d912ed617.png" alt="alt" style="zoom: 33%;" /> |
+
+*《**增长黑客》***
+
+关键词：**生产流程(3)**，<u>增长策略(4)</u>，分析模型(4)
+
+作者：Sean Ellis， Morgan Brown
+
+出版年份：2015
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618351522ab3f51d9177f6a7.jpg" alt="alt"  /> | <img src="https://img.imgdb.cn/item/6003e1153ffa7d37b3728e9f.png" alt="img" style="zoom: 50%;" /> |
+
+***《启示录：打造用户喜爱的产品》***
+
+关键词：**生产流程(2)**，职责和素质(4)，职场处事(4)
+
+作者：Marty Cagan
+
+出版年份：2011
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/6183558e2ab3f51d917bcc69.jpg) | <img src="https://img.imgdb.cn/item/600bc6a63ffa7d37b3a13186.png" alt="img" style="zoom: 33%;" /> |
+
+## 数据分析
+
+### Pandas/Seaborn
+
+***《利用Python进行数据分析（第二版)》***
+
+关键词：<u>**Pandas/Seaborn(4)**</u>，数据清洗(4)，Python基础(3)
+
+作者：Wes McKinney
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618395202ab3f51d91be4336.jpg" alt="alt" style="zoom:;" /> | <img src="https://pic.imgdb.cn/item/618f16332ab3f51d912e7f2c.png" alt="alt" style="zoom:25%;" /> |
+
+### 分析模型
+
+***《如何用数据解决实际问题》***
+
+关键词：**<u>分析模型(4)</u>**
+
+作者：柏木吉基
+
+出版年份：2018
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6183948a2ab3f51d91bd97b5.jpg" alt="alt" style="zoom: 50%;" /> | <img src="https://pic.imgdb.cn/item/618f254b2ab3f51d913443b5.png" alt="alt" style="zoom: 33%;" /> |
+
+*《**增长黑客》***
+
+关键词：**分析模型(4)**，<u>增长策略(4)</u>，生产流程(3)
+
+作者：Sean Ellis， Morgan Brown
+
+出版年份：2015
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618351522ab3f51d9177f6a7.jpg" alt="alt"  /> | <img src="https://img.imgdb.cn/item/6003e1153ffa7d37b3728e9f.png" alt="img" style="zoom: 50%;" /> |
+
+### 数据清洗
+
+***《利用Python进行数据分析（第二版)》***
+
+关键词：**<u>数据清洗(4)</u>**，<u>Pandas/Seaborn(4)</u>，Python基础(3)
+
+作者：Wes McKinney
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618395202ab3f51d91be4336.jpg" alt="alt" style="zoom:;" /> | <img src="https://pic.imgdb.cn/item/618f16332ab3f51d912e7f2c.png" alt="alt" style="zoom:25%;" /> |
+
+## 设计指南
+
+### 用户心理
+
+***《幕后产品：打造突破式产品思维》***
+
+关键词：**<u>用户心理(4)</u>**，问卷设计(4)，<u>增长策略(3)</u>，<u>需求分析(3)</u>，职责和素质(2)
+
+作者：王诗沐
+
+出版年份：2019
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618366552ab3f51d918d4e1f.jpg) | <img src="https://pic.imgdb.cn/item/618a26b32ab3f51d914d54e7.png" alt="alt" style="zoom: 33%;" /> |
+
+### 需求分析
+
+***《幕后产品：打造突破式产品思维》***
+
+关键词：**<u>需求分析(3)</u>**，问卷设计(4)，<u>用户心理(4)</u>，<u>增长策略(3)</u>，职责和素质(2)
+
+作者：王诗沐
+
+出版年份：2019
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618366552ab3f51d918d4e1f.jpg) | <img src="https://pic.imgdb.cn/item/618a26b32ab3f51d914d54e7.png" alt="alt" style="zoom: 33%;" /> |
+
+*《**用户体验要素：以用户为中心的产品设计》***
+
+关键词：**需求分析(3)**，文档撰写(3)
+
+作者：Jesse James Garrett
+
+出版年份：2010
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618360a52ab3f51d9186f9f8.jpg) | <img src="https://img.imgdb.cn/item/600bc8573ffa7d37b3a1ff67.png" alt="img" style="zoom:80%;" /> |
+
+***《人人都是产品经理：写给产品新人》***
+
+关键词：**需求分析(2)**，问卷设计(4)，生产流程(3)，<u>文档撰写(3)</u>，职责和素质(2)
+
+作者：苏杰
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618629122ab3f51d91b95449.jpg" alt="alt" style="zoom: 67%;" /> | <img src="https://pic.imgdb.cn/item/618f17292ab3f51d912ed617.png" alt="alt" style="zoom: 33%;" /> |
+
+### 文档撰写
+
+*《**用户体验要素：以用户为中心的产品设计》***
+
+关键词：**文档撰写(3)**，需求分析(3)
+
+作者：Jesse James Garrett
+
+出版年份：2010
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618360a52ab3f51d9186f9f8.jpg) | <img src="https://img.imgdb.cn/item/600bc8573ffa7d37b3a1ff67.png" alt="img" style="zoom:80%;" /> |
+
+***《人人都是产品经理：写给产品新人》***
+
+关键词：**<u>文档撰写(3)</u>**，问卷设计(4)、生产流程(3)、职责和素质(2)、需求分析(2)
+
+作者：苏杰
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618629122ab3f51d91b95449.jpg" alt="alt" style="zoom: 67%;" /> | <img src="https://pic.imgdb.cn/item/618f17292ab3f51d912ed617.png" alt="alt" style="zoom: 33%;" /> |
+
+### 问卷设计
+
+***《幕后产品：打造突破式产品思维》***
+
+关键词：**问卷设计(4)**，<u>用户心理(4)</u>，<u>增长策略(3)</u>，<u>需求分析(3)</u>，职责和素质(2)
+
+作者：王诗沐
+
+出版年份：2019
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618366552ab3f51d918d4e1f.jpg) | <img src="https://pic.imgdb.cn/item/618a26b32ab3f51d914d54e7.png" alt="alt" style="zoom: 33%;" /> |
+
+***《人人都是产品经理：写给产品新人》***
+
+关键词：**问卷设计(4)**，<u>文档撰写(3)</u>，生产流程(3)，需求分析(2)，职责和素质(2)
+
+作者：苏杰
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618629122ab3f51d91b95449.jpg" alt="alt" style="zoom: 67%;" /> | <img src="https://pic.imgdb.cn/item/618f17292ab3f51d912ed617.png" alt="alt" style="zoom: 33%;" /> |
+
+### 增长策略
+
+***《幕后产品：打造突破式产品思维》***
+
+关键词：<u>用户心理(4)</u>，<u>需求分析(3)</u>，职责和素质(2)，问卷设计(4)，**<u>增长策略(4)</u>**
+
+作者：王诗沐
+
+出版年份：2019
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/618366552ab3f51d918d4e1f.jpg) | <img src="https://pic.imgdb.cn/item/618a26b32ab3f51d914d54e7.png" alt="alt" style="zoom: 33%;" /> |
+
+*《**增长黑客》***
+
+关键词：**<u>增长策略(4)</u>**，分析模型(4)，生产流程(3)
+
+作者：Sean Ellis， Morgan Brown
+
+出版年份：2015
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618351522ab3f51d9177f6a7.jpg" alt="alt"  /> | <img src="https://img.imgdb.cn/item/6003e1153ffa7d37b3728e9f.png" alt="img" style="zoom: 50%;" /> |
+
+## 协调沟通
+
+### 职场处事
+
+***《启示录：打造用户喜爱的产品》***
+
+关键词：**职场处事(4)**，职责和素质(4)，生产流程(2)
+
+作者：Marty Cagan
+
+出版年份：2011
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![alt](https://pic.imgdb.cn/item/6183558e2ab3f51d917bcc69.jpg) | <img src="https://img.imgdb.cn/item/600bc6a63ffa7d37b3a13186.png" alt="img" style="zoom: 33%;" /> |
+
+### 结构化表达
+
+***《结构思考力》***
+
+关键词：**<u>结构化表达(5)</u>**
+
+作者：李忠秋
+
+出版年份：2014
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6184d74b2ab3f51d911163c2.jpg" alt="img" style="zoom: 50%;" /> | <img src="https://pic.imgdb.cn/item/6187fa1a2ab3f51d9138ad79.png" alt="alt" style="zoom:25%;" /> |
+
+## 硬技能
+
+### MySQL基础
+
+***《SQL必知必会》***
+
+关键词：**MySQL基础(4)**
+
+作者：Ben Forta
+
+出版年份：2013
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6183941f2ab3f51d91bd0516.jpg" alt="alt" style="zoom:25%;" /> | <img src="https://pic.imgdb.cn/item/618a25da2ab3f51d914c0284.png" alt="alt" style="zoom: 25%;" /> |
+
+### Python基础
+
+***《简明Python教程》***
+
+关键词：**Python基础(4)**
+
+作者：Swaroop C H
+
+出版年份：2013
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6184d27f2ab3f51d910a5f01.jpg" alt="alt" style="zoom: 50%;" /> | ![alt](https://pic.imgdb.cn/item/618f254b2ab3f51d93443b5.png) |
+
+***《利用Python进行数据分析（第二版)》***
+
+关键词：**Python基础(3)**，<u>Pandas/Seaborn(4)</u>，数据清洗(4)
+
+作者：Wes McKinney
+
+出版年份：2017
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/618395202ab3f51d91be4336.jpg" alt="alt" style="zoom:;" /> | <img src="https://pic.imgdb.cn/item/618f16332ab3f51d912e7f2c.png" alt="alt" style="zoom:25%;" /> |
+
+## 业务认知
+
+### 计算广告
+
+***《计算广告：互联网商业变现的市场与技术》***
+
+关键词：**计算广告(5)**，推荐算法(Null)
+
+作者：刘鹏、王超
+
+出版年份：2015
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6186275f2ab3f51d91b6b9cf.jpg" alt="alt" style="zoom:150%;" /> | <img src="https://pic.imgdb.cn/item/618f195d2ab3f51d912f7e14.png" alt="alt" style="zoom:25%;" /> |
+
+
+
+# 待回顾书目
+
+***《计算广告：互联网商业变现的市场与技术》***
+
+关键词：**推荐算法(Null)**，计算广告(5)
+
+作者：刘鹏、王超
+
+出版年份：2015
+
+| 封面                                                         | 思维导图                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://pic.imgdb.cn/item/6186275f2ab3f51d91b6b9cf.jpg" alt="alt" style="zoom:150%;" /> | <img src="https://pic.imgdb.cn/item/618f195d2ab3f51d912f7e14.png" alt="alt" style="zoom:25%;" /> |
+
+
+
+[TOC]
